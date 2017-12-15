@@ -1,0 +1,82 @@
+<?php 
+$hostname_connNASBS = "mysql.aasurg.org";
+$database_connNASBS = "ascabstracts";
+$username_connNASBS = "aasmaster";
+$password_connNASBS = "M0nty_pyth0ns_fly1ng_circuS";
+$connNASBS = mysql_pconnect($hostname_connNASBS, $username_connNASBS, $password_connNASBS) or trigger_error(mysql_error(),E_USER_ERROR); 
+?>
+<?php
+if (!function_exists("GetSQLValueString")) {
+function GetSQLValueString($theValue, $theType, $theDefinedValue = "", $theNotDefinedValue = "") 
+{
+  if (PHP_VERSION < 6) {
+    $theValue = get_magic_quotes_gpc() ? stripslashes($theValue) : $theValue;
+  }
+
+  $theValue = function_exists("mysql_real_escape_string") ? mysql_real_escape_string($theValue) : mysql_escape_string($theValue);
+
+  switch ($theType) {
+    case "text":
+      $theValue = ($theValue != "") ? "'" . $theValue . "'" : "NULL";
+      break;    
+    case "long":
+    case "int":
+      $theValue = ($theValue != "") ? intval($theValue) : "NULL";
+      break;
+    case "double":
+      $theValue = ($theValue != "") ? doubleval($theValue) : "NULL";
+      break;
+    case "date":
+      $theValue = ($theValue != "") ? "'" . $theValue . "'" : "NULL";
+      break;
+    case "defined":
+      $theValue = ($theValue != "") ? $theDefinedValue : $theNotDefinedValue;
+      break;
+  }
+  return $theValue;
+}
+}
+
+mysql_select_db($database_connNASBS, $connNASBS);
+$query_rsCatergories = "SELECT program_sessions.session_code, program_sessions.session_type, program_sessions.SESSION_FOR_EMAIL, program_sessions.session_option_number, program_sessions.conference_room_name, program_sessions.Date_for_Email, program_sessions.Time_for_Email FROM program_sessions WHERE program_sessions.session_code Not Like 96 ORDER BY program_sessions.session_code";
+$rsCatergories = mysql_query($query_rsCatergories, $connNASBS) or die(mysql_error());
+$row_rsCatergories = mysql_fetch_assoc($rsCatergories);
+$totalRows_rsCatergories = mysql_num_rows($rsCatergories);
+?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta charset="ISO-8859-1">
+<title>ASC Print/Save Abstracts by Session</title>
+<style type="text/css">
+<!--
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 9.5pt;
+}
+-->
+</style>
+</head>
+
+<body>
+<h3>Welcome, ASC Moderator</h3>
+
+<p>Please locate your session below and click the link to see the abstracts.  Then simply print the page, convert it to PDF, or bookmark it to get your abstracts.</p>
+
+<table cellpadding="5" cellspacing="0">
+  <tr>
+    <td>Session Type and Title</td>
+    <td>Session Day and Time</td>
+  </tr>
+<?php do { ?>
+<tr>
+  <td><?php echo $row_rsCatergories['session_code']; ?> - <a href="printabslist2.php?session=<?php echo $row_rsCatergories['session_code']; ?>"><?php echo $row_rsCatergories['session_type']; ?>: <?php echo $row_rsCatergories['SESSION_FOR_EMAIL']; ?></a></td>
+  <td><?php echo $row_rsCatergories['Date_for_Email']; ?>  |  <?php echo $row_rsCatergories['Time_for_Email']; ?></td>
+</tr>  
+  <?php } while ($row_rsCatergories = mysql_fetch_assoc($rsCatergories)); ?>
+</table>  
+</body>
+</html>
+<?php
+mysql_free_result($rsCatergories);
+?>

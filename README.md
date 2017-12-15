@@ -1,2 +1,2 @@
 # HelpingDan
-All the files that I have helped Dan with
+The Various Files Dan has asked me to look at, and the edits
